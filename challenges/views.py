@@ -1,28 +1,40 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
-
+from django.urls import reverse
 
 monthly_challenges = {
-    "january": "jan",
-    "february": "feb",
-    "march": "mar",
-    "april": "apr",
+    "january": "january",
+    "february": "february",
+    "march": "march",
+    "april": "april",
     "may": "may",
-    "june": "jun",
-    "july": "jul",
-    "august": "aug",
-    "september": "sept",
-    "october": "oct",
-    "november": "nov",
-    "december": "dec",
+    "june": "june",
+    "july": "july",
+    "august": "august",
+    "september": "september",
+    "october": "october",
+    "november": "november",
+    "december": "december",
 }
+
+def index(request):
+    list_items = ""    
+    months = list(monthly_challenges.keys())
+    for month in months:
+        month_path = reverse("month-challenge", args=[month])
+        capitlized_month = month.capitalize()
+        list_items += f"<li><a href=\"{month_path}\">{capitlized_month}</a></li>"
+    response_data = f"<ul>{list_items}</ul>"
+    print(response_data)
+    return HttpResponse(response_data)
 
 def monthly_challenge_by_number(request, month):
     months = list(monthly_challenges.keys())
     if month > len(months):
         return HttpResponseNotFound("Month not found")
     redirect_month = months[month-1]
-    return HttpResponseRedirect("/challenges/" + redirect_month)
+    redirect_path = reverse("month-challenge", args=[redirect_month]) # = challenge/january
+    return HttpResponseRedirect(redirect_path)
 
 
 def monthly_challenge(request, month):
@@ -31,4 +43,4 @@ def monthly_challenge(request, month):
     except KeyError:
         return HttpResponseNotFound("Month not found")
 
-    return HttpResponse(challenge_text*20)
+    return HttpResponse(f"<h1>{challenge_text.capitalize()*10}</h1>")
