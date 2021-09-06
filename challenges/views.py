@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse
+from django.template.loader import render_to_string
 
 monthly_challenges = {
     "january": "january",
@@ -25,7 +26,6 @@ def index(request):
         capitlized_month = month.capitalize()
         list_items += f"<li><a href=\"{month_path}\">{capitlized_month}</a></li>"
     response_data = f"<ul>{list_items}</ul>"
-    print(response_data)
     return HttpResponse(response_data)
 
 def monthly_challenge_by_number(request, month):
@@ -40,7 +40,6 @@ def monthly_challenge_by_number(request, month):
 def monthly_challenge(request, month):
     try:
         challenge_text = monthly_challenges[month]
+        return render(request, "challenges/challenge.html", {"text": challenge_text, "month": month})
     except KeyError:
         return HttpResponseNotFound("Month not found")
-
-    return HttpResponse(f"<h1>{challenge_text.capitalize()*10}</h1>")
